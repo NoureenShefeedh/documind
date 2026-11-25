@@ -37,7 +37,7 @@ class HashingEmbedder:
         for i, text in enumerate(texts):
             tokens = tokenize(text)
             counts = Counter(tokens)
-            counts_bi = Counter(f"{a}_{b}" for a, b in zip(tokens, tokens[1:]))
+            counts_bi = Counter(f"{a}_{b}" for a, b in zip(tokens, tokens[1:], strict=False))
             for feat, c in counts.items():
                 idx, sign = self._index_sign(feat)
                 out[i, idx] += sign * (1.0 + math.log(c))

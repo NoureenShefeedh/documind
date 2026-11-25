@@ -1,6 +1,6 @@
 """Storage interface plus an in-memory implementation (used by tests and quick demos)."""
 from dataclasses import dataclass, field
-from datetime import datetime, timezone
+from datetime import UTC, datetime
 from itertools import count
 from typing import Protocol
 
@@ -81,10 +81,10 @@ class MemoryRepository:
         self, user_id: int, filename: str, chunks: list[str], embeddings: np.ndarray
     ) -> DocumentRecord:
         doc = DocumentRecord(
-            next(self._did), user_id, filename, len(chunks), datetime.now(timezone.utc)
+            next(self._did), user_id, filename, len(chunks), datetime.now(UTC)
         )
         self.documents[doc.id] = doc
-        for i, (text, emb) in enumerate(zip(chunks, embeddings)):
+        for i, (text, emb) in enumerate(zip(chunks, embeddings, strict=True)):
             self.chunks.append(_Chunk(doc.id, i, text, np.asarray(emb, dtype=np.float32)))
         return doc
 

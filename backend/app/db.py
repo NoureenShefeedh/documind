@@ -1,5 +1,5 @@
 """PostgreSQL schema (SQLAlchemy 2.0 + pgvector) and the Postgres-backed repository."""
-from datetime import datetime, timezone
+from datetime import UTC, datetime
 
 import numpy as np
 from pgvector.sqlalchemy import Vector
@@ -27,7 +27,7 @@ EMBEDDING_DIM = get_settings().embedding_dim
 
 
 def _now() -> datetime:
-    return datetime.now(timezone.utc)
+    return datetime.now(UTC)
 
 
 class Base(DeclarativeBase):
@@ -131,7 +131,7 @@ class PgRepository:
                     content=content,
                     embedding=np.asarray(emb, dtype=np.float32).tolist(),
                 )
-                for i, (content, emb) in enumerate(zip(chunks, embeddings))
+                for i, (content, emb) in enumerate(zip(chunks, embeddings, strict=True))
             )
             s.commit()
             return _doc(doc)

@@ -67,7 +67,9 @@ def create_app(
 
     def current_user_id(creds: HTTPAuthorizationCredentials | None = Depends(bearer)) -> int:
         unauthorized = HTTPException(
-            status.HTTP_401_UNAUTHORIZED, "not authenticated", headers={"WWW-Authenticate": "Bearer"}
+            status.HTTP_401_UNAUTHORIZED,
+            "not authenticated",
+            headers={"WWW-Authenticate": "Bearer"},
         )
         if creds is None:
             raise unauthorized
@@ -106,12 +108,15 @@ def create_app(
         return token_for(user.id)
 
     @app.post("/documents", response_model=DocumentOut, status_code=status.HTTP_201_CREATED)
-    def upload(file: UploadFile = File(...), user_id: int = Depends(current_user_id)) -> DocumentOut:
+    def upload(
+        file: UploadFile = File(...), user_id: int = Depends(current_user_id)
+    ) -> DocumentOut:
         limit = settings.max_upload_mb * 1024 * 1024
         data = file.file.read(limit + 1)
         if len(data) > limit:
             raise HTTPException(
-                status.HTTP_413_REQUEST_ENTITY_TOO_LARGE, f"file exceeds {settings.max_upload_mb} MB"
+                status.HTTP_413_REQUEST_ENTITY_TOO_LARGE,
+                f"file exceeds {settings.max_upload_mb} MB",
             )
         try:
             doc = app.state.service.ingest(user_id, file.filename or "untitled.txt", data)
@@ -145,7 +150,12 @@ def create_app(
         return QueryOut(
             answer=result.answer,
             sources=[
-                SourceOut(document=s.document, chunk_index=s.chunk_index, text=s.text, score=s.score)
+                SourceOut(
+                    document=s.document,
+                    chunk_index=s.chunk_index,
+                    text=s.text,
+                    score=s.score,
+                )
                 for s in result.sources
             ],
         )

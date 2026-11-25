@@ -16,7 +16,7 @@ class Answer:
 
 
 class RagService:
-    """Ingestion (parse -> chunk -> embed -> store) and question answering (retrieve -> generate)."""
+    """Ingest (parse, chunk, embed, store) and answer (retrieve, generate)."""
 
     def __init__(
         self,
